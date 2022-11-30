@@ -13,8 +13,28 @@ on:
   workflow_dispatch:
 
 jobs:
-  deploy-snowflake-changes-job:
+
+  # First "set_env" job gets and parse the branch this is run from
+  # This is used to configure the backend.config and tfvars file in the env-config directory
+  set_env:
     runs-on: ubuntu-latest
+    steps:
+      - name: Some check on branch
+        id: branch_check
+        run: |
+          echo "Running on branch ${{ github.ref }}"
+          echo "::set-output name=env_name::${GITHUB_REF#refs/heads/}"
+         
+      #- name: Use variable setup in previous step
+      #  run: echo "I'm using variable ${{ steps.branch_check.outputs.env_name }}"
+  
+    outputs:
+      env_name: ${{ steps.branch_check.outputs.env_name }} # job output ... consumed by next job
+
+  deploy-snowflake-changes-job:
+    needs: [set_env] #orchestrates set_env job to run before terraform_deployment
+    runs-on: ubuntu-latest
+    environment: ${{ needs.set_env.outputs.env_name }}
 
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
