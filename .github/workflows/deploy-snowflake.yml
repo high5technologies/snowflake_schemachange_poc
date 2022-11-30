@@ -54,7 +54,7 @@ jobs:
           SF_ROLE: ${{ secrets.SF_ROLE }}
           SF_WAREHOUSE: ${{ secrets.SF_WAREHOUSE }}
           SNOWFLAKE_PASSWORD: ${{ secrets.SF_PASSWORD }}
-          CONFIG_FOLDER: ${{ needs.set_env.outputs.env_name }}
+          CONFIG_FOLDER: $GITHUB_WORKSPACE/config/${{ needs.set_env.outputs.env_name }}/
         run: |
           echo "GITHUB_WORKSPACE: $GITHUB_WORKSPACE"
           python --version
